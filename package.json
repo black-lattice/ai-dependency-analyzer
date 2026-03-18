@@ -1,0 +1,23 @@
+{
+  "name": "@your-company/ai-dependency-analyzer",
+  "version": "1.0.0",
+  "description": "前端项目依赖分析与查询工具 (全局 CLI & MCP Server)",
+  "main": "src/core/query.js",
+  "bin": {
+    "ai-dependency-analyzer": "./bin/cli.js"
+  },
+  "scripts": {
+    "test": "node scripts/test-query.js"
+  },
+  "keywords": [
+    "dependency",
+    "analysis",
+    "mcp",
+    "ai"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1"
+  }
+}

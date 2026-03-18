@@ -1,0 +1,12 @@
+# 依赖目录
+node_modules/
+
+# 自动生成的中间产物文件
+dependency-analysis.json
+
+# 如果你觉得每次构建分析结果都会产生大量 Git Diff，也可以把下面这行取消注释
+# 这样就可以要求团队成员自己在使用前运行 node build-dependencies.js
+dependency-analysis-filtered.json
+
+# 系统文件
+.DS_Store
