@@ -6,8 +6,17 @@
   "bin": {
     "ai-dependency-analyzer": "./bin/cli.js"
   },
+  "files": [
+    "bin/",
+    "src/",
+    "scripts/",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "scripts": {
-    "test": "node scripts/test-query.js"
+    "test": "node scripts/verify-package.js",
+    "test:query-demo": "node scripts/test-query.js"
   },
   "keywords": [
     "dependency",
@@ -15,8 +24,16 @@
     "mcp",
     "ai"
   ],
-  "author": "",
+  "author": "YunFeng",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/black-lattice/ai-dependency-analyzer.git"
+  },
+  "homepage": "https://github.com/black-lattice/ai-dependency-analyzer#readme",
+  "bugs": {
+    "url": "https://github.com/black-lattice/ai-dependency-analyzer/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1"
   }

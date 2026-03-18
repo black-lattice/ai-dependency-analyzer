@@ -10,7 +10,7 @@ function printHelp() {
 ai-dependency-analyzer - 前端项目依赖分析与查询工具
 
 使用方法:
-  npx @your-company/ai-dependency-analyzer <command> [options]
+  npx ai-dependency-analyzer <command>
 
 可用命令:
   init        在当前项目初始化配置文件 (dependency-analyzer.config.js)
@@ -21,7 +21,7 @@ ai-dependency-analyzer - 前端项目依赖分析与查询工具
   mcp         启动 MCP (Model Context Protocol) Server，供 AI 客户端调用
 
   query       [备用] 在终端进行命令行查询
-              用法: query <impact|downstream|upstream|search> <文件路径>
+              用法: query <impact|downstream|upstream|graph|search> <文件路径>
 `);
 }
 
@@ -51,7 +51,9 @@ switch (command) {
   default:
     if (command && command !== 'help' && command !== '--help' && command !== '-h') {
       console.log(`❌ 未知的命令: ${command}\\n`);
+      printHelp();
+      process.exit(1);
     }
     printHelp();
-    process.exit(command ? 1 : 0);
+    process.exit(0);
 }

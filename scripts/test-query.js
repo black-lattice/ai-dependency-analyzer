@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const {
   getDependencyGraph,
   getDownstream,
@@ -6,8 +8,17 @@ const {
   searchByPattern
 } = require('../src/core/query');
 
+const DEPENDENCY_FILE = path.join(process.cwd(), '.dependency-analysis.json');
+
+if (!fs.existsSync(DEPENDENCY_FILE)) {
+  console.error('缺少依赖分析结果文件，无法运行查询演示脚本。');
+  console.error(`请先在目标项目根目录执行: ai-dependency-analyzer build`);
+  console.error(`当前期望文件路径: ${DEPENDENCY_FILE}`);
+  process.exit(1);
+}
+
 console.log('========================================');
-console.log('依赖关系查询工具测试');
+console.log('依赖关系查询演示');
 console.log('========================================\n');
 
 console.log('测试 1: 查询某个文件的完整依赖关系图');
@@ -61,7 +72,7 @@ searchResults.slice(0, 3).forEach((result, index) => {
 console.log('');
 
 console.log('========================================');
-console.log('测试完成！');
+console.log('演示完成！');
 console.log('========================================');
 console.log('\n可用的函数:');
 console.log('  - getDependencyGraph(filePath, options)  获取完整依赖关系图');
