@@ -1,5 +1,5 @@
 {
-  "name": "@your-company/ai-dependency-analyzer",
+  "name": "ai-dependency-analyzer",
   "version": "1.0.0",
   "description": "前端项目依赖分析与查询工具 (全局 CLI & MCP Server)",
   "main": "src/core/query.js",
