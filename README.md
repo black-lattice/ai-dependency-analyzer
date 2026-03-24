@@ -150,6 +150,12 @@ ai-dependency-analyzer build
 
 首次使用前建议先执行一次。项目发生较大重构、目录迁移或别名调整后，也建议重新构建。
 
+如果你只是想查看构建命令说明，而不实际执行扫描，可以使用：
+
+```bash
+ai-dependency-analyzer build --help
+```
+
 ## CLI 查询用法
 
 你可以直接在终端进行查询：
@@ -177,6 +183,12 @@ ai-dependency-analyzer query search OrderCard
 - `search`：按关键字或正则表达式搜索路径
 
 CLI 输出为纯 JSON，便于 AI 或其他脚本继续处理。
+
+如果你想查看查询命令说明，可以使用：
+
+```bash
+ai-dependency-analyzer query --help
+```
 
 ### 查询路径说明
 
@@ -309,6 +321,16 @@ ai-dependency-analyzer query impact components/Button/index.tsx
 npx ai-dependency-analyzer query impact src/components/Button/index.tsx
 ```
 
+如果你只是想查看全部命令帮助，也可以直接运行：
+
+```bash
+ai-dependency-analyzer --help
+ai-dependency-analyzer init --help
+ai-dependency-analyzer build --help
+ai-dependency-analyzer query --help
+ai-dependency-analyzer mcp --help
+```
+
 ## AI 可调用的 MCP 工具
 
 当 MCP Server 配置完成后，AI 将自动获得以下工具：
@@ -339,6 +361,15 @@ npx ai-dependency-analyzer query impact src/components/Button/index.tsx
 示例话术：
 
 > 帮我查一下 `components/PickerView/PickerMixin.tsx` 都被哪些地方使用了。
+
+### `get_dependency_graph`
+
+用途：获取指定文件的完整上下游依赖图。  
+参数：`file_path`
+
+示例话术：
+
+> 帮我把 `pages/order/index.page.tsx` 的上下游依赖图完整拉出来。
 
 ### `search_dependencies`
 
@@ -376,6 +407,9 @@ npx ai-dependency-analyzer query impact src/components/Button/index.tsx
 
 ```bash
 node bin/cli.js --help
+node bin/cli.js init --help
+node bin/cli.js build --help
+node bin/cli.js query --help
 node bin/cli.js init
 node bin/cli.js build
 node bin/cli.js query impact pages/demo.tsx

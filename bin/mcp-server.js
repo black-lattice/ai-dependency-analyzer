@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
+const { version } = require('../package.json');
 const { Server } = require("@modelcontextprotocol/sdk/server/index.js");
 const { StdioServerTransport } = require("@modelcontextprotocol/sdk/server/stdio.js");
 const { CallToolRequestSchema, ListToolsRequestSchema } = require("@modelcontextprotocol/sdk/types.js");
 const queries = require("../src/core/query");
 
 const server = new Server({
-  name: "project-dependency-analyzer",
-  version: "1.0.0",
+  name: "ai-dependency-analyzer",
+  version,
 }, {
   capabilities: {
     tools: {}
@@ -54,6 +55,20 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
           file_path: { 
             type: "string", 
             description: "需要分析的相对文件路径" 
+          }
+        },
+        required: ["file_path"]
+      }
+    },
+    {
+      name: "get_dependency_graph",
+      description: "获取指定文件的完整上下游依赖图。当你需要同时查看某个文件的调用来源和下游实现时使用。",
+      inputSchema: {
+        type: "object",
+        properties: {
+          file_path: {
+            type: "string",
+            description: "需要分析的相对文件路径"
           }
         },
         required: ["file_path"]
@@ -107,6 +122,16 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       };
     }
 
+    if (name === "get_dependency_graph") {
+      const result = queries.getDependencyGraph(args.file_path);
+      return {
+        content: [{
+          type: "text",
+          text: JSON.stringify(result, null, 2)
+        }]
+      };
+    }
+
     if (name === "search_dependencies") {
       const result = queries.searchByPattern(args.pattern);
       return { content: [{ type: "text", text: JSON.stringify(result, null, 2) }] };
@@ -116,7 +141,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   } catch (error) {
     return {
       isError: true,
-      content: [{ type: "text", text: `Error executing tool: ${error.message}` }]
+      content: [{ type: "text", text: `工具执行失败: ${error.message}` }]
     };
   }
 });

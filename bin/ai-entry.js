@@ -5,15 +5,22 @@ const {
   getDependencyGraph,
   searchByPattern
 } = require('../src/core/query');
+const { QUERY_ACTIONS, isHelpFlag, printHelp } = require('../src/cli/help');
 
 const action = process.argv[2];
 const target = process.argv[3];
 
+if (isHelpFlag(action)) {
+  printHelp('query');
+  process.exit(0);
+}
+
 if (!action || !target) {
-  console.log(JSON.stringify({ 
-    error: "Missing arguments.", 
-    usage: "node ai-entry.js <action> <target>",
-    actions: ["impact", "downstream", "upstream", "graph", "search"]
+  console.log(JSON.stringify({
+    error: '缺少查询参数。',
+    usage: 'ai-dependency-analyzer query <impact|downstream|upstream|graph|search> <目标>',
+    actions: QUERY_ACTIONS,
+    suggestion: '请先执行 ai-dependency-analyzer query --help 查看完整用法'
   }, null, 2));
   process.exit(1);
 }
@@ -38,15 +45,16 @@ try {
       result = searchByPattern(target);
       break;
     default:
-      result = { 
-        error: `Unknown action: ${action}.`, 
-        availableActions: ["impact", "downstream", "upstream", "graph", "search"] 
-      };
+      console.log(JSON.stringify({
+        error: `未知查询动作: ${action}`,
+        availableActions: QUERY_ACTIONS,
+      }, null, 2));
+      process.exit(1);
   }
   
   // 确保输出纯净的 JSON 格式，不含任何人类阅读的杂音
   console.log(JSON.stringify(result, null, 2));
 } catch (error) {
-  console.log(JSON.stringify({ error: error.message, stack: error.stack }, null, 2));
+  console.log(JSON.stringify({ error: error.message }, null, 2));
   process.exit(1);
 }

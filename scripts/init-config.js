@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { isHelpFlag, printHelp } = require('../src/cli/help');
 
 // 模板字典
 const TEMPLATES = {
@@ -107,6 +108,11 @@ function main() {
   const PROJECT_ROOT = process.cwd();
   let stack = process.argv[2];
 
+  if (isHelpFlag(stack)) {
+    printHelp('init');
+    process.exit(0);
+  }
+
   // 如果没有手动指定参数，尝试自动推断
   if (!stack) {
     console.log('🔄 未指定技术栈参数，正在尝试从 package.json 自动推断...');
@@ -119,7 +125,7 @@ function main() {
       Object.keys(TEMPLATES).forEach(key => {
         console.log(`  - ${key.padEnd(10)}: ${TEMPLATES[key].description}`);
       });
-      console.log('\\n示例: npm run init vue');
+      console.log('\\n示例: ai-dependency-analyzer init vue');
       process.exit(1);
     }
   } else if (!TEMPLATES[stack]) {

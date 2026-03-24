@@ -13,14 +13,24 @@ function loadDependencies() {
     return dependencyCache;
   }
 
+  if (!fs.existsSync(DEPENDENCY_FILE)) {
+    throw new Error('未找到 .dependency-analysis.json，请先在目标项目根目录执行 ai-dependency-analyzer build');
+  }
+
   try {
     const data = JSON.parse(fs.readFileSync(DEPENDENCY_FILE, 'utf-8'));
+    if (!data || typeof data !== 'object' || !data.dependencies || typeof data.dependencies !== 'object') {
+      throw new Error('依赖分析文件格式无效');
+    }
     dependencyCache = data.dependencies;
     return dependencyCache;
   } catch (error) {
-    console.error('加载依赖关系文件失败:', error.message);
-    return {};
+    throw new Error(`加载依赖关系文件失败: ${error.message}`);
   }
+}
+
+function uniqueList(items) {
+  return [...new Set(items)];
 }
 
 function getDownstream(filePath, dependencies = null, visited = new Set()) {
@@ -32,18 +42,23 @@ function getDownstream(filePath, dependencies = null, visited = new Set()) {
   const deps = dependencies[normalizedPath] || [];
 
   if (visited.has(normalizedPath)) {
-    return [];
+    return {
+      direct: [],
+      all: [],
+      tree: [],
+    };
   }
 
   visited.add(normalizedPath);
+  const uniqueDeps = uniqueList(deps);
 
   const result = {
-    direct: deps,
-    all: [...deps],
+    direct: uniqueDeps,
+    all: [...uniqueDeps],
     tree: [],
   };
 
-  deps.forEach((dep) => {
+  uniqueDeps.forEach((dep) => {
     const childResult = getDownstream(dep, dependencies, new Set(visited));
     result.all.push(...childResult.all);
     result.tree.push({
@@ -51,6 +66,8 @@ function getDownstream(filePath, dependencies = null, visited = new Set()) {
       dependencies: childResult.tree,
     });
   });
+
+  result.all = uniqueList(result.all).filter((item) => item !== normalizedPath);
 
   return result;
 }
@@ -79,14 +96,15 @@ function getUpstream(filePath, dependencies = null, visited = new Set()) {
   }
 
   visited.add(normalizedPath);
+  const uniqueUpstream = uniqueList(upstream);
 
   const result = {
-    direct: upstream,
-    all: [...upstream],
+    direct: uniqueUpstream,
+    all: [...uniqueUpstream],
     tree: [],
   };
 
-  upstream.forEach((file) => {
+  uniqueUpstream.forEach((file) => {
     const childResult = getUpstream(file, dependencies, new Set(visited));
     result.all.push(...childResult.all);
     result.tree.push({
@@ -94,6 +112,8 @@ function getUpstream(filePath, dependencies = null, visited = new Set()) {
       dependents: childResult.tree,
     });
   });
+
+  result.all = uniqueList(result.all).filter((item) => item !== normalizedPath);
 
   return result;
 }
@@ -187,8 +207,13 @@ function getRecommendation(impact, directCount) {
 function searchByPattern(pattern) {
   const dependencies = loadDependencies();
   const results = [];
+  let regex;
 
-  const regex = new RegExp(pattern, 'i');
+  try {
+    regex = new RegExp(pattern, 'i');
+  } catch (error) {
+    throw new Error(`无效的搜索表达式: ${error.message}`);
+  }
 
   Object.keys(dependencies).forEach((file) => {
     if (regex.test(file)) {

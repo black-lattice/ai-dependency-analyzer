@@ -2,11 +2,17 @@ const fs = require('fs');
 const path = require('path');
 
 const { loadConfig } = require('../src/config');
+const { isHelpFlag, printHelp } = require('../src/cli/help');
 const { Analyzer } = require('../src/core/analyzer');
 const { TreeFilter } = require('../src/filters/tree-filter');
 
 const PROJECT_ROOT = process.cwd();
 const OUTPUT_FILE = path.join(PROJECT_ROOT, '.dependency-analysis.json');
+
+if (isHelpFlag(process.argv[2])) {
+  printHelp('build');
+  process.exit(0);
+}
 
 console.log('========================================');
 console.log('开始执行依赖分析聚合脚本');
